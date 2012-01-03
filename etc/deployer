@@ -1,5 +1,3 @@
-# ~/etc/deployer executed when deploying pushed changes
-
 # The directory where releases will be deployed to
 DEPLOY_DIR=~/deployer
 

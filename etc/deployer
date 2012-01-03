@@ -1,0 +1,7 @@
+# ~/etc/deployer executed when deploying pushed changes
+
+# The directory where releases will be deployed to
+DEPLOY_DIR=~/deployer
+
+# The directory where repositories will be initialized
+REPO_DIR=~

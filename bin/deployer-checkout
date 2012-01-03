@@ -1,0 +1,42 @@
+#!/bin/bash
+
+. "$HOME/etc/deployer"
+
+REPNAME=$(basename `pwd`)
+APPNAME=${REPNAME%.git}
+RELNAME=$(date +%Y%m%d%H%M%S)
+CURNAME=current
+
+ROOTDIR=`cd $DEPLOY_DIR; pwd`
+
+echo "Deploying..."
+
+if [ ! -d "$ROOTDIR" ]; then
+    echo "Deployment directory does not exist!" && exit 1
+fi
+
+if [ ! -d "$ROOTDIR/$APPNAME" ]; then
+    mkdir $ROOTDIR/$APPNAME || (echo "Couldn't create application directory" && exit 1)
+fi
+
+if [ ! -d "$ROOTDIR/$APPNAME/releases" ]; then
+    mkdir $ROOTDIR/$APPNAME/releases || (echo "Couldn't create release directory" && exit 1)
+fi
+
+if [ ! -d "$ROOTDIR/$APPNAME/releases/$RELNAME" ]; then
+    mkdir $ROOTDIR/$APPNAME/releases/$RELNAME || (echo "Couldn't create new release" && exit 1)
+else
+    echo "Release already exist!" && exit 1
+fi
+
+GIT_WORK_TREE=$ROOTDIR/$APPNAME/releases/$RELNAME git checkout -q -f master || (echo "Couldn't check out new release" && exit 1)
+
+(`cd $ROOTDIR/$APPNAME && ln -sfn releases/$RELNAME $CURNAME`) || (echo "Couldn't switch to new release" && exit 1)
+
+files=$ROOTDIR/$APPNAME/releases/*
+for f in $files;
+do
+    if [ "$f" != "$ROOTDIR/$APPNAME/releases/$RELNAME" ]; then
+        rm -rf "$f"
+    fi
+done

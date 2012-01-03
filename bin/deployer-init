@@ -1,0 +1,19 @@
+#!/bin/bash
+
+. "$HOME/etc/deployer"
+
+ROOTDIR=`cd $REPO_DIR; pwd`
+APPNAME=$1
+REPNAME=$APPNAME.git
+
+echo "Initializing..."
+
+if [ ! -d "$ROOTDIR" ]
+then
+    echo "Repository directory does not exists!" && exit 1
+fi
+
+mkdir $ROOTDIR/$REPNAME || (echo "Couldn't create repository directory" && exit 1)
+(`cd $ROOTDIR/$REPNAME && git init -q --bare`) || (echo "Couldn't initialize repository" && exit 1)
+(`cd $ROOTDIR/$REPNAME && echo "$HOME/bin/deployer-checkout" >> hooks/post-receive && chmod ug+x hooks/post-receive`) || \
+    (echo "Couldn't add post receive hook" && exit 1)

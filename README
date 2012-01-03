@@ -1,0 +1,45 @@
+README for deployer
+
+Installation
+------------
+
+The deployer scripts are currently intended to be installed in a user account.
+
+It is recomended that you set up a special user on the deploy server to handle
+git repositories and deployment.
+
+
+Init repository
+---------------
+
+Run the init script to crete a new repository. The script will create a new bare
+git repository and add a post receive hook to deploy the code.
+
+    $ bin/deployer-init myapp
+
+In the example above a new repository 'myapp.git' will be created.
+
+
+Deploying
+---------
+
+When changes are pushed to a properly initialized git repository the content of 
+the repository will be deployed as a new release.
+
+    $ bin/deployer-checkout
+
+The post-receive hook deploy-checkout will be called. It will check out the 
+content into a directory structure, like the one below, where [deploy_to] is 
+where in the file system we want to deploy to and [app_name] is the name of 
+the application we are deploying (same as the repository name minus the .git
+suffix).
+
+    [deploy_to]
+    [deploy_to]/[app_name]
+    [deploy_to]/[app_name]/releases
+    [deploy_to]/[app_name]/releases/20111227213207
+    [deploy_to]/[app_name]/current -> [deploy_to]/releases/20111227213207
+
+Each time we deploy a new directory will be created under the releases directory
+and the new version will be placed there. Then the current symlink will be 
+updated to point to that directory.
